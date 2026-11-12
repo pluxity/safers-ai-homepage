@@ -1,1 +1,1 @@
-# safers-ai-hompage
+# safers-ai-homepage
