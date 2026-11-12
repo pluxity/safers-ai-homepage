@@ -1,5 +1,5 @@
 {
-  "name": "@safers/shared",
+  "name": "@safers-ai/shared",
   "private": true,
   "type": "module",
   "exports": {
