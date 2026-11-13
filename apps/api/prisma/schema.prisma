@@ -11,3 +11,83 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// ─── enum ───────────────────────
+enum Locale {
+  KO
+  EN
+
+  @@map("locale")
+}
+
+enum PostCategory {
+  COMPANY /// 회사 소식
+  SAFERS /// Safers 소식
+  NOTICE
+
+  @@map("post_category")
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+
+  @@map("post_status")
+}
+
+enum InquiryType {
+  DEMO
+  PRODUCT
+  PARTNERSHIP /// 제휴·마케팅
+  ETC
+
+  @@map("inquiry_type")
+}
+
+enum InquiryStatus {
+  NEW
+  DONE
+  SPAM
+
+  @@map("inquiry_status")
+}
+
+// ─── 소식 (posts) ────────────────
+model Post {
+  id             Int          @id @default(autoincrement())
+  locale         Locale       @default(KO)
+  category       PostCategory
+  title          String       @db.VarChar(200)
+  summary        String       @db.VarChar(300)
+  body_html      String
+  thumbnail_path String?      @db.VarChar(300)
+  source_url     String?      @db.VarChar(500)
+  status         PostStatus   @default(DRAFT)
+  published_at   DateTime?    @db.Timestamptz
+  created_at     DateTime     @default(now()) @db.Timestamptz
+  updated_at     DateTime     @default(now()) @updatedAt @db.Timestamptz
+
+  @@index([locale, status, published_at(sort: Desc)])
+  @@map("posts")
+}
+
+// ─── 문의 (inquiry) ────────────
+model Inquiry {
+  id                Int           @id @default(autoincrement())
+  locale            Locale        @default(KO)
+  type              InquiryType
+  name              String        @db.VarChar(50)
+  email             String        @db.VarChar(254)
+  phone             String        @db.VarChar(30)
+  company           String?       @db.VarChar(100)
+  subject           String        @db.VarChar(200)
+  message           String
+  privacy_agreed_at DateTime      @db.Timestamptz
+  marketing_agreed  Boolean       @default(false)
+  status            InquiryStatus @default(NEW)
+  memo              String?
+  created_at        DateTime      @default(now()) @db.Timestamptz
+
+  @@index([status, created_at(sort: Desc)])
+  @@map("inquiries")
+}
