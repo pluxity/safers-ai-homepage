@@ -35,13 +35,36 @@ enum PostStatus {
   @@map("post_status")
 }
 
-enum InquiryType {
-  DEMO
-  PRODUCT
+/// 관심 서비스 (문의 폼에서 복수 선택)
+enum InquiryService {
+  PLATFORM /// 통합 플랫폼
+  AI_SAFETY_BLACKBOX /// AI 안전감지·블랙박스
+  AI_CONVERSATIONAL /// AI 대화형 관제
+  AI_HEALTH /// AI 보건관리
+  CCTV_MONITORING /// 실시간 CCTV 관제
+  HEAVY_EQUIPMENT /// 중장비 연동 관리
   PARTNERSHIP /// 제휴·마케팅
-  ETC
 
-  @@map("inquiry_type")
+  @@map("inquiry_service")
+}
+
+/// 운영 현장 수
+enum SiteCount {
+  ONE /// 1곳
+  TWO_TO_FIVE /// 2–5곳
+  SIX_OR_MORE /// 6곳 이상
+  UNDECIDED /// 미정
+
+  @@map("site_count")
+}
+
+/// CCTV 환경
+enum CctvEnv {
+  EXISTING /// 기존 CCTV 활용
+  NEW /// 새로 구축
+  UNDECIDED /// 미정
+
+  @@map("cctv_env")
 }
 
 enum InquiryStatus {
@@ -73,20 +96,21 @@ model Post {
 
 // ─── 문의 (inquiry) ────────────
 model Inquiry {
-  id                Int           @id @default(autoincrement())
-  locale            Locale        @default(KO)
-  type              InquiryType
-  name              String        @db.VarChar(50)
-  email             String        @db.VarChar(254)
-  phone             String        @db.VarChar(30)
-  company           String?       @db.VarChar(100)
-  subject           String        @db.VarChar(200)
-  message           String
-  privacy_agreed_at DateTime      @db.Timestamptz
-  marketing_agreed  Boolean       @default(false)
-  status            InquiryStatus @default(NEW)
-  memo              String?
-  created_at        DateTime      @default(now()) @db.Timestamptz
+  id                Int              @id @default(autoincrement())
+  locale            Locale           @default(KO)
+  services          InquiryService[]
+  site_count        SiteCount
+  cctv_env          CctvEnv
+  name              String           @db.VarChar(50)
+  company           String           @db.VarChar(100)
+  email             String           @db.VarChar(254)
+  phone             String           @db.VarChar(30)
+  message           String?
+  privacy_agreed_at DateTime         @db.Timestamptz
+  marketing_agreed  Boolean          @default(false)
+  status            InquiryStatus    @default(NEW) /// 처리 상태 (관리자)
+  memo              String? /// 내부 메모 (관리자)
+  created_at        DateTime         @default(now()) @db.Timestamptz
 
   @@index([status, created_at(sort: Desc)])
   @@map("inquiries")
