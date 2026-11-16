@@ -10,6 +10,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "catalog:",
     "@prisma/client": "catalog:",
+    "@safers-ai/shared": "workspace:*",
     "bcryptjs": "catalog:",
     "dotenv": "catalog:",
     "express": "catalog:",
