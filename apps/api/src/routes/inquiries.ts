@@ -11,7 +11,7 @@ inquiriesRouter.get("/", async (req: Request, res: Response) => {
 
     const inquiries = await prisma.inquiry.findMany({
         where: {status},
-        orderBy: {created_at:"desc"},
+        orderBy: [{created_at: "desc"}, {id: "desc"}],
         skip: (page - 1) * size,
         take: size
     });

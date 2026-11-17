@@ -12,7 +12,7 @@ postsRouter.get("/", async (req: Request, res: Response) => {
 
     const posts = await prisma.post.findMany({
         where: {locale, status},
-        orderBy: {published_at: "desc"},
+        orderBy: [{published_at: "desc"}, {id: "desc"}],
         skip: (page - 1) * size,
         take: size
     });
