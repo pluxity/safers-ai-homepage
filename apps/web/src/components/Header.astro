@@ -1,0 +1,100 @@
+---
+import { Image } from "astro:assets";
+import { Menu, X } from "lucide-react";
+
+import logo from "../assets/logo.svg";
+import ArrowUpRight from "../assets/icons/arrow-up-right.svg";
+import Button from "./ui/Button.astro";
+import { pluxityUrl } from "../data/content";
+
+const { noActiveMenu = false } = Astro.props;
+const path = Astro.url.pathname;
+
+const menus = [
+  { href: "/", label: "플랫폼" },
+  { href: "/services", label: "서비스" },
+];
+
+const isActive = (href: string) =>
+  !noActiveMenu && (href === "/" ? path === "/" : path.startsWith(href));
+---
+<header id="site-header" class="sticky top-0 z-50 border-b border-ink-border bg-ink/90 text-ink-foreground backdrop-blur-xl">
+  <div class="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 lg:px-8">
+    <div class="flex items-center gap-10">
+      <a href="/" class="flex items-center"><Image src={logo} alt="safers" class="h-6.5 w-auto" /></a>
+      <nav class="hidden items-center gap-1 md:flex">
+        {menus.map((menu) => (
+          <a
+            href={menu.href}
+            aria-current={isActive(menu.href) ? "page" : undefined}
+            class="rounded-md px-4 py-2 text-base font-medium text-ink-muted transition-colors hover:text-ink-foreground aria-[current=page]:text-ink-foreground"
+          >
+            {menu.label}
+          </a>
+        ))}
+      </nav>
+    </div>
+
+    <div class="hidden items-center gap-6 md:flex">
+      <a
+        href={pluxityUrl}
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-1 text-[0.95rem] text-ink-muted transition-colors hover:text-ink-foreground"
+      >
+        PLUXITY <ArrowUpRight class="size-4" />
+      </a>
+      <span class="text-[0.95rem] text-ink-muted">
+        <span class="font-semibold text-ink-foreground">KR</span> / EN
+      </span>
+      <Button href="/contact">도입 문의</Button>
+    </div>
+
+    <button
+      type="button"
+      data-menu-toggle
+      aria-label="메뉴 열기"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      class="group rounded-md p-2 md:hidden"
+    >
+      <Menu className="size-6 group-aria-expanded:hidden" />
+      <X className="hidden size-6 group-aria-expanded:block" />
+    </button>
+  </div>
+
+  <nav id="mobile-menu" hidden class="border-t border-ink-border px-5 pt-2 pb-6 md:hidden">
+    {menus.map((menu) => (
+      <a href={menu.href} class="block border-b border-ink-border py-4 text-xl">
+        {menu.label}
+      </a>
+    ))}
+    <a
+      href={pluxityUrl}
+      target="_blank"
+      rel="noopener"
+      class="flex items-center gap-1 border-b border-ink-border py-4 text-xl text-ink-muted"
+    >
+      PLUXITY 홈페이지 <ArrowUpRight class="size-5" />
+    </a>
+    <Button href="/contact" size="xl" class="mt-6 w-full">도입 문의</Button>
+  </nav>
+</header>
+
+<script>
+  // 모바일 메뉴 열고 닫기 (React 없이 버튼 하나만 제어)
+  const toggle = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+  const menu = document.getElementById("mobile-menu");
+
+  if (toggle && menu) {
+    const setOpen = (open: boolean) => {
+      menu.hidden = !open;
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "메뉴 닫기" : "메뉴 열기");
+    };
+
+    toggle.addEventListener("click", () => setOpen(menu.hidden));
+    // 메뉴 안의 링크를 누르면 닫는다
+    menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+  }
+</script>

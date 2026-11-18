@@ -1,16 +1,92 @@
 ---
----
+import { ArrowRight } from "lucide-react";
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+import Layout from "../layouts/Layout.astro";
+import Button from "../components/ui/Button.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import CtaBand from "../components/CtaBand.astro";
+import Converge from "../components/react/home/Converge";
+import DayStory from "../components/react/home/DayStory";
+import MultiSiteShowcase from "../components/react/home/MultiSiteShowcase";
+import { videos } from "../data/content";
+---
+<Layout
+  title="Safers 세이퍼스 | AI CCTV 기반 건설현장 안전관리 플랫폼"
+  description="AI 영상분석으로 현장 위험을 실시간 감지하고, 사고 전후 상황을 3D 블랙박스로 기록합니다. 흩어진 스마트 안전 솔루션을 하나의 화면으로."
+>
+  <!-- 히어로 -->
+  <section class="relative isolate overflow-hidden bg-ink text-ink-foreground">
+    <video
+      class="absolute inset-0 -z-20 h-full w-full object-cover"
+      src={videos.hero}
+      poster={videos.heroPoster}
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+      aria-hidden="true"
+    ></video>
+    <div class="absolute inset-0 -z-10 bg-hero-fade" aria-hidden="true"></div>
+    <div class="absolute inset-0 -z-10 bg-fade-bottom" aria-hidden="true"></div>
+
+    <div class="mx-auto flex min-h-[calc(100svh-4.5rem)] max-w-7xl flex-col justify-center px-5 py-20 lg:px-8">
+      <div class="max-w-3xl animate-rise">
+        <p class="eyebrow-lg text-primary-bright">AI CCTV 기반 건설현장 통합 안전관리</p>
+        <h1 class="mt-6 text-[2.75rem] font-extrabold display-tight sm:text-6xl lg:text-[5rem]">
+          위험은 먼저 감지하고,
+          <br />
+          사고 전후는 3D로 기록합니다.
+        </h1>
+        <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted sm:text-xl">
+          세이퍼스는 AI 영상분석으로 현장 위험을 실시간으로 찾아내고, 흩어진 안전 솔루션을 하나의 화면으로 묶습니다.
+        </p>
+        <div class="mt-10 flex flex-wrap gap-3">
+          <Button href="/contact" size="xl">도입 문의하기 <ArrowRight /></Button>
+          <Button href="/services" variant="outline-ink" size="xl">서비스 살펴보기</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 흩어진 시스템 → 하나의 화면 -->
+  <Converge client:visible />
+
+  <!-- 어느 현장의 하루 -->
+  <section class="bg-ink text-ink-foreground">
+    <div class="mx-auto max-w-7xl px-5 pt-28 lg:px-8 lg:pt-36">
+      <SectionHeading tone="ink" eyebrow="어느 현장의 하루">
+        출근부터 다음 날까지,
+        <br />
+        세이퍼스가 지켜보는 현장
+        <Fragment slot="description">하나의 현장에서 하루 동안 벌어지는 일을 따라가며 세이퍼스의 서비스를 만나보세요.</Fragment>
+      </SectionHeading>
+    </div>
+
+    <DayStory client:visible />
+
+    <div class="mx-auto max-w-7xl px-5 pb-28 lg:px-8">
+      <Button href="/services" variant="outline-ink" size="xl">다섯 가지 서비스 자세히 보기 <ArrowRight /></Button>
+    </div>
+  </section>
+
+  <!-- 현장이 여러 곳일 때 -->
+  <section class="overflow-hidden bg-background">
+    <div class="mx-auto max-w-7xl px-5 py-28 lg:px-8 lg:py-36">
+      <div class="grid items-end gap-10 lg:grid-cols-[1.2fr_1fr]">
+        <SectionHeading eyebrow="현장이 2곳 이상이라면">
+          현장이 늘어나도,
+          <br />
+          화면은 하나입니다.
+        </SectionHeading>
+        <p class="text-lg leading-relaxed text-muted-foreground sm:text-xl">
+          지도 위에서 전국 현장의 안전 상태와 주요 위험 이벤트를 한눈에 봅니다. 궁금한 현장은 바로 3D 대시보드로 들어가 확인하세요.
+        </p>
+      </div>
+
+      <MultiSiteShowcase client:visible />
+    </div>
+  </section>
+
+  <CtaBand />
+</Layout>

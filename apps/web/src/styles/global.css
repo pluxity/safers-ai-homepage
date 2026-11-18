@@ -1,0 +1,187 @@
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+@import "tailwindcss";
+
+/*
+ * Safers 디자인 시스템 (Lovable 시안 styles.css 기준)
+ * 밝은 본문 면 + 제품을 보여 주는 진한 ink 섹션.
+ * 강조 색은 Safers 파랑(primary) 하나만 쓴다.
+ */
+
+@theme {
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
+  --radius-3xl: 1.375rem;
+  --radius-4xl: 1.625rem;
+
+  --color-background: oklch(98.5% 0.003 250);
+  --color-foreground: oklch(19% 0.032 262);
+  --color-card: oklch(100% 0 0);
+  --color-card-foreground: oklch(19% 0.032 262);
+
+  --color-primary: oklch(55% 0.21 262);
+  --color-primary-foreground: oklch(99% 0.003 250);
+  --color-primary-soft: oklch(95% 0.03 262);
+  --color-primary-bright: oklch(74% 0.14 255);
+
+  --color-secondary: oklch(95.5% 0.007 255);
+  --color-secondary-foreground: oklch(22% 0.035 262);
+  --color-muted: oklch(95.5% 0.007 255);
+  --color-muted-foreground: oklch(45% 0.03 258);
+  --color-accent: oklch(95% 0.03 262);
+  --color-accent-foreground: oklch(30% 0.12 262);
+  --color-destructive: oklch(60% 0.22 25);
+  --color-border: oklch(90% 0.01 255);
+  --color-input: oklch(86% 0.014 255);
+  --color-ring: oklch(55% 0.21 262);
+
+  --color-ink: oklch(16.5% 0.035 263);
+  --color-ink-raised: oklch(21.5% 0.042 263);
+  --color-ink-foreground: oklch(97% 0.006 250);
+  --color-ink-muted: oklch(78% 0.025 255);
+  --color-ink-border: oklch(100% 0 0 / 0.12);
+
+  /* 제품 화면 목업 안에서만 쓰는 경보 색 */
+  --color-critical: oklch(64% 0.22 25);
+  --color-major: oklch(76% 0.16 62);
+  --color-normal: oklch(74% 0.15 160);
+
+  --animate-pulse-ring: pulse-ring 1.8s ease-out infinite;
+  --animate-rise: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-nudge: nudge 1.6s ease-in-out infinite;
+
+  @keyframes pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in oklab, currentColor 60%, transparent);
+    }
+    100% {
+      box-shadow: 0 0 0 0.625rem transparent;
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-0.5rem);
+    }
+  }
+
+  @keyframes nudge {
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.6;
+    }
+    50% {
+      transform: translateY(0.375rem);
+      opacity: 1;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(1.125rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    font-feature-settings: "ss06", "tnum";
+    -webkit-font-smoothing: antialiased;
+    word-break: keep-all;
+  }
+
+  ::selection {
+    background: var(--color-primary);
+    color: var(--color-primary-foreground);
+  }
+}
+
+@utility bg-hero-fade {
+  background-image: linear-gradient(
+    90deg,
+    oklch(14% 0.035 263 / 0.78) 0%,
+    oklch(14% 0.035 263 / 0.5) 40%,
+    oklch(14% 0.035 263 / 0.05) 78%,
+    oklch(14% 0.035 263 / 0) 100%
+  );
+}
+
+@utility bg-fade-bottom {
+  background-image: linear-gradient(180deg, transparent 70%, var(--color-ink) 100%);
+}
+
+@utility shadow-panel {
+  box-shadow:
+    0 2.5rem 5rem -2.5rem oklch(10% 0.05 263 / 0.6),
+    0 0 0 1px var(--color-ink-border);
+}
+
+@utility shadow-soft {
+  box-shadow: 0 1.875rem 3.75rem -2.25rem oklch(25% 0.08 262 / 0.45);
+}
+
+/* 밝은 섹션의 제품 이미지 액자: 얇은 테두리, 흰 여백, 부드러운 그림자 */
+@utility media-frame {
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-card);
+  padding: 0.375rem;
+  box-shadow:
+    0 0.0625rem 0.125rem oklch(30% 0.03 260 / 0.06),
+    0 1.75rem 3.5rem -2rem oklch(35% 0.07 262 / 0.3);
+}
+
+/* 작은 섹션 라벨 */
+@utility eyebrow {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* 섹션 제목용 큰 라벨 */
+@utility eyebrow-lg {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+@utility display-tight {
+  letter-spacing: -0.035em;
+  line-height: 1.18;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}

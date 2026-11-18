@@ -1,0 +1,43 @@
+---
+import { Mail, Phone } from "lucide-react";
+
+import Layout from "../layouts/Layout.astro";
+import ContactForm from "../components/react/contact/ContactForm";
+import { contact } from "../data/content";
+---
+<Layout
+  title="도입 문의 | Safers 세이퍼스"
+  description="현장 규모와 CCTV 환경을 알려주시면 필요한 세이퍼스 서비스 구성을 제안드립니다."
+>
+  <section class="bg-background">
+    <div class="mx-auto grid max-w-7xl gap-16 px-5 py-20 lg:grid-cols-[1fr_1.45fr] lg:px-8 lg:py-28">
+      <div>
+        <div class="lg:sticky lg:top-32">
+          <p class="eyebrow text-primary">도입 문의</p>
+          <h1 class="mt-5 text-[2.5rem] font-extrabold display-tight sm:text-5xl lg:text-[3.5rem]">
+            우리 현장에 맞는
+            <br />
+            구성을 제안드립니다.
+          </h1>
+          <p class="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            남겨주신 내용을 확인한 뒤 담당자가 신속히 연락드립니다.
+          </p>
+
+          <div class="mt-12 space-y-5 border-t border-border pt-8">
+            <p class="font-semibold">바로 연락하기</p>
+            <a href={`tel:${contact.phone.replace(/\s/g, "")}`} class="flex items-center gap-4 text-2xl font-bold hover:text-primary">
+              <Phone className="size-6 text-primary" />
+              {contact.phone}
+            </a>
+            <a href={`mailto:${contact.email}`} class="flex items-center gap-4 text-xl font-semibold hover:text-primary">
+              <Mail className="size-6 text-primary" />
+              {contact.email}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <ContactForm client:load />
+    </div>
+  </section>
+</Layout>

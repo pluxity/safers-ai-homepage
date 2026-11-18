@@ -1,0 +1,31 @@
+---
+// 섹션 제목 묶음 (라벨 + 큰 제목 + 설명). title과 description은 slot으로 받아서 <br />을 쓸 수 있다.
+import { cn } from "../lib/cn";
+
+interface Props {
+  eyebrow?: string;
+  tone?: "light" | "ink";
+  class?: string;
+}
+
+const { eyebrow, tone = "light", class: extra } = Astro.props;
+const hasDescription = Astro.slots.has("description");
+---
+<div class={cn("max-w-3xl", extra)}>
+  {eyebrow && <p class={cn("eyebrow-lg", tone === "ink" ? "text-primary-bright" : "text-primary")}>{eyebrow}</p>}
+  <h2
+    class={cn(
+      "mt-4 text-[2.25rem] font-bold display-tight sm:text-5xl lg:text-[3.5rem]",
+      tone === "ink" ? "text-ink-foreground" : "text-foreground",
+    )}
+  >
+    <slot />
+  </h2>
+  {
+    hasDescription && (
+      <p class={cn("mt-6 text-lg leading-relaxed sm:text-xl", tone === "ink" ? "text-ink-muted" : "text-muted-foreground")}>
+        <slot name="description" />
+      </p>
+    )
+  }
+</div>
