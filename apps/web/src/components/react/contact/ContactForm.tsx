@@ -107,6 +107,7 @@ export default function ContactForm() {
       setSites("ONE");
       setCctv("UNDECIDED");
       setFromConfigurator(false);
+      window.history.replaceState(null, "", window.location.pathname);
     } catch {
       setStatus({ type: "error", message: `전송에 실패했습니다. ${contact.email}로 직접 문의해 주세요.` });
     } finally {
