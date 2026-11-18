@@ -5,8 +5,9 @@ import { contact, services } from "../../../data/content";
 import { buttonClass } from "../../ui/button";
 import { cn } from "../../../lib/cn";
 
-// 화면에 보이는 선택지 → API(DB enum) 값
-const topics = [
+type Topic = { label: string; value: string; serviceId?: string };
+
+const topics: Topic[] = [
   { label: "통합 플랫폼", value: "PLATFORM" },
   ...services.map((s) => ({
     label: s.short,
