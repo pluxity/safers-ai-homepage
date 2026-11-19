@@ -14,11 +14,13 @@
     "bcryptjs": "catalog:",
     "dotenv": "catalog:",
     "express": "catalog:",
+    "jsonwebtoken": "catalog:",
     "pg": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@types/express": "catalog:",
+    "@types/jsonwebtoken": "catalog:",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "prisma": "catalog:",
