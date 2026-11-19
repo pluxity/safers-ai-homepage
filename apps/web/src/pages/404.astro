@@ -1,9 +1,14 @@
 ---
+// 없는 주소. 정적 사이트라 404 페이지는 하나뿐이어서, 영어 주소(/en/...)에서 온 경우만 영어로 바꿔 보여 준다.
 import Layout from "../layouts/Layout.astro";
 import Button from "../components/ui/Button.astro";
 import ArrowRight from "../assets/icons/arrow-right.svg";
+import { translate } from "../i18n";
+
+const ko = translate("ko").notFound;
+const en = translate("en").notFound;
 ---
-<Layout title="페이지를 찾을 수 없습니다 | Safers 세이퍼스" hideFooter noActiveMenu>
+<Layout title={translate("ko").meta.notFoundTitle} hideFooter noActiveMenu>
   <section class="relative flex flex-1 items-center overflow-hidden bg-ink text-ink-foreground">
     <div class="absolute -right-40 top-1/2 size-150 -translate-y-1/2 rounded-full bg-primary/20 blur-3xl"></div>
     <p class="pointer-events-none absolute -right-8 bottom-0 select-none text-[28vw] font-black leading-none text-ink-foreground/5">
@@ -11,18 +16,30 @@ import ArrowRight from "../assets/icons/arrow-right.svg";
     </p>
 
     <div class="relative mx-auto w-full max-w-7xl px-5 lg:px-8">
-      <p class="eyebrow-lg text-primary-bright">404 · PAGE NOT FOUND</p>
-      <h1 class="mt-6 text-5xl font-extrabold display-tight md:text-7xl">
-        페이지를<br />찾을 수 없습니다.
+      <p class="eyebrow-lg text-primary-bright">{ko.eyebrow}</p>
+      <h1 class="mt-6 text-5xl font-extrabold display-tight md:text-7xl" data-en={en.title.join("\n")}>
+        {ko.title[0]}<br />{ko.title[1]}
       </h1>
-      <p class="mt-6 text-lg text-ink-muted sm:text-xl">
-        주소가 바뀌었거나 삭제된 페이지입니다.<br />
-        아래 버튼으로 원하시는 곳으로 이동해 주세요.
+      <p class="mt-6 text-lg text-ink-muted sm:text-xl" data-en={en.description.join("\n")}>
+        {ko.description[0]}<br />
+        {ko.description[1]}
       </p>
 
       <div class="mt-10 flex flex-wrap gap-3">
-        <Button href="/" size="xl">홈으로 <ArrowRight /></Button>
+        <Button href="/" size="xl"><span data-en={en.home}>{ko.home}</span> <ArrowRight /></Button>
       </div>
     </div>
   </section>
 </Layout>
+
+<script>
+  // /en/... 에서 404가 나면 문구를 영어로 바꾸고, 홈 버튼도 /en으로 보낸다
+  if (location.pathname.startsWith("/en")) {
+    document.documentElement.lang = "en";
+    document.querySelectorAll<HTMLElement>("[data-en]").forEach((el) => {
+      const lines = (el.dataset.en ?? "").split("\n");
+      el.replaceChildren(...lines.flatMap((line, i) => (i ? [document.createElement("br"), line] : [line])));
+    });
+    document.querySelector<HTMLAnchorElement>("main a[href='/']")?.setAttribute("href", "/en");
+  }
+</script>

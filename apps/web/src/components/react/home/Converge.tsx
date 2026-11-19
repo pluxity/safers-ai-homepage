@@ -2,7 +2,8 @@ import { Cctv, ChevronRight, Drone, Forklift, HardHat, Siren, Thermometer, type 
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import { useRef } from "react";
 
-import { scatteredSystems, videos } from "../../../data/content";
+import { videos } from "../../../data/content";
+import { translate } from "../../../i18n";
 import { VideoShot } from "../Section";
 
 // 흩어진 시스템 칩이 처음 놓이는 위치 [가로 vw, 세로 vh]
@@ -15,17 +16,11 @@ const chipOrigins: [number, number][] = [
   [22, 28],
 ];
 
-const chipIcons: Record<string, LucideIcon> = {
-  "CCTV 관제": Cctv,
-  "환경 모니터링": Thermometer,
-  "위험 경고 솔루션": Siren,
-  "스마트 안전장구": HardHat,
-  "드론 안전 관측": Drone,
-  "중장비 관리": Forklift,
-};
+const chipIcons: LucideIcon[] = [Cctv, Thermometer, Siren, HardHat, Drone, Forklift];
 
 /** 스크롤하면 흩어진 시스템 6개가 가운데로 모이고, 하나의 3D 화면으로 바뀐다 */
-export default function Converge() {
+export default function Converge({ lang }: { lang: string }) {
+  const text = translate(lang).home.converge;
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
 
@@ -44,16 +39,14 @@ export default function Converge() {
         <div className="relative mt-[8vh] grid w-full max-w-4xl place-items-center text-center">
           <motion.div style={{ opacity: titleA }} className="col-start-1 row-start-1">
             <h2 className="text-[2.25rem] font-bold display-tight sm:text-5xl lg:text-6xl">
-              화면은 여섯 개,
+              {text.titleA[0]}
               <br />
-              현장은 하나입니다.
+              {text.titleA[1]}
             </h2>
             <div className="mx-auto mt-7 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-base font-semibold sm:text-lg">
               <span className="flex flex-col items-center leading-tight">
-                <span className="text-muted-foreground">흩어진 안전 솔루션</span>
-                <span className="mt-1 text-sm font-medium text-muted-foreground/80 sm:text-base">
-                  별도 화면 · 별도 로그인
-                </span>
+                <span className="text-muted-foreground">{text.scattered}</span>
+                <span className="mt-1 text-sm font-medium text-muted-foreground/80 sm:text-base">{text.scatteredSub}</span>
               </span>
               <span className="relative flex w-20 items-center sm:w-28" aria-hidden>
                 <span className="relative h-0.5 flex-1 overflow-hidden rounded-full bg-border">
@@ -61,16 +54,16 @@ export default function Converge() {
                 </span>
                 <ChevronRight className="-ml-2 size-5 text-primary" strokeWidth={2.5} />
               </span>
-              <span className="text-primary">하나의 플랫폼</span>
+              <span className="text-primary">{text.platform}</span>
             </div>
           </motion.div>
           <motion.div style={{ opacity: titleB, y: titleBy }} className="col-start-1 row-start-1">
             <h2 className="text-[2.25rem] font-bold display-tight sm:text-5xl lg:text-6xl">
-              이제, <span className="text-primary">하나의 화면</span>으로.
+              {text.titleB.before}
+              <span className="text-primary">{text.titleB.highlight}</span>
+              {text.titleB.after}
             </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-              세이퍼스는 AI CCTV를 중심으로 흩어진 안전 솔루션을 3D 디지털 트윈 위에 모읍니다.
-            </p>
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground sm:text-xl">{text.descriptionB}</p>
           </motion.div>
         </div>
 
@@ -84,8 +77,15 @@ export default function Converge() {
             <span className="text-3xl font-extrabold tracking-tight text-primary sm:text-4xl">Safers</span>
           </motion.div>
 
-          {scatteredSystems.map((label, i) => (
-            <ConvergeChip key={label} label={label} index={i} origin={chipOrigins[i] ?? [0, 0]} progress={scrollYProgress} />
+          {text.systems.map((label, i) => (
+            <ConvergeChip
+              key={label}
+              label={label}
+              icon={chipIcons[i] ?? Cctv}
+              index={i}
+              origin={chipOrigins[i] ?? [0, 0]}
+              progress={scrollYProgress}
+            />
           ))}
 
           <motion.div
@@ -97,7 +97,7 @@ export default function Converge() {
             }}
             className="absolute inset-x-0 top-6 mx-auto origin-top"
           >
-            <VideoShot src={videos.convergeTwinLoop} poster={videos.convergeTwinPoster} label="현장 3D 통합관리 화면" />
+            <VideoShot src={videos.convergeTwinLoop} poster={videos.convergeTwinPoster} label={text.videoLabel} />
           </motion.div>
         </div>
       </div>
@@ -107,11 +107,13 @@ export default function Converge() {
 
 function ConvergeChip({
   label,
+  icon: Icon,
   index,
   origin,
   progress,
 }: {
   label: string;
+  icon: LucideIcon;
   index: number;
   origin: [number, number];
   progress: MotionValue<number>;
@@ -120,7 +122,6 @@ function ConvergeChip({
   const y = useTransform(progress, [0.05, 0.4], [`${origin[1]}vh`, "0vh"]);
   const opacity = useTransform(progress, [0, 0.3, 0.42], [1, 1, 0]);
   const scale = useTransform(progress, [0.25, 0.42], [1, 0.6]);
-  const Icon = chipIcons[label] ?? Cctv;
 
   return (
     <motion.div

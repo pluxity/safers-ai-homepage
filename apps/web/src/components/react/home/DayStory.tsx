@@ -2,28 +2,40 @@ import { ArrowRight } from "lucide-react";
 import { useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
-import { daySteps, type DayStep } from "../../../data/content";
+import { getDaySteps, type DayStep } from "../../../data/content";
+import { translate } from "../../../i18n";
 import { cn } from "../../../lib/cn";
 
 /**
  * "어느 현장의 하루" 타임라인과 오른쪽 고정 화면.
  * 글이 화면 가운데에 오면 해당 단계의 클립이 오른쪽에서 재생된다. (제목 부분은 Astro 쪽에 있음)
+ * servicesPath: 언어에 맞는 서비스 페이지 주소 (Astro 쪽에서 getRelativeLocaleUrl로 만들어 넘긴다)
  */
-export default function DayStory() {
+export default function DayStory({ lang, servicesPath }: { lang: string; servicesPath: string }) {
+  const steps = getDaySteps(lang);
+  const more = translate(lang).home.day.more;
   const [active, setActive] = useState(0);
 
   return (
     <div className="mx-auto grid max-w-7xl gap-10 px-5 pb-28 pt-12 lg:grid-cols-[1fr_1.35fr] lg:gap-16 lg:px-8 lg:pb-36">
       <ol className="relative border-l border-ink-border">
-        {daySteps.map((s, i) => (
-          <DayStepItem key={s.time} step={s} index={i} active={active === i} onActive={setActive} />
+        {steps.map((s, i) => (
+          <DayStepItem
+            key={s.time}
+            step={s}
+            index={i}
+            active={active === i}
+            onActive={setActive}
+            moreLabel={more}
+            servicesPath={servicesPath}
+          />
         ))}
       </ol>
 
       <div className="hidden lg:block">
         <div className="sticky top-[calc(50svh-15rem)]">
           <div className="relative aspect-video overflow-hidden rounded-xl bg-ink-raised shadow-panel">
-            {daySteps.map((s, i) => (
+            {steps.map((s, i) => (
               <MotionPhoto
                 key={s.time}
                 step={s}
@@ -37,9 +49,9 @@ export default function DayStory() {
             ))}
           </div>
           <div className="mt-5 flex items-center justify-between text-ink-muted">
-            <span className="text-lg font-semibold text-ink-foreground">{daySteps[active]?.serviceName}</span>
+            <span className="text-lg font-semibold text-ink-foreground">{steps[active]?.serviceName}</span>
             <span className="font-mono">
-              {String(active + 1).padStart(2, "0")} / {String(daySteps.length).padStart(2, "0")}
+              {String(active + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}
             </span>
           </div>
         </div>
@@ -53,11 +65,15 @@ function DayStepItem({
   index,
   active,
   onActive,
+  moreLabel,
+  servicesPath,
 }: {
   step: DayStep;
   index: number;
   active: boolean;
   onActive: (i: number) => void;
+  moreLabel: string;
+  servicesPath: string;
 }) {
   // 긴 줄 전체가 아니라 글 부분을 지켜봐서, 글이 화면 가운데에 올 때 그림이 바뀌게 한다
   const ref = useRef<HTMLDivElement>(null);
@@ -76,7 +92,7 @@ function DayStepItem({
     >
       <span
         className={cn(
-          "absolute -left-[0.4375rem] top-12 size-3.5 rounded-full border-2 transition-colors lg:top-1/2 lg:-mt-[0.4375rem]",
+          "absolute -left-1.75 top-12 size-3.5 rounded-full border-2 transition-colors lg:top-1/2 lg:-mt-1.75",
           active ? "border-primary-bright bg-primary-bright" : "border-ink-muted bg-ink",
         )}
       />
@@ -88,10 +104,10 @@ function DayStepItem({
           <span className="rounded-full border border-ink-border px-4 py-1.5 text-[0.95rem]">{step.serviceName}</span>
           {step.serviceId && (
             <a
-              href={`/services#${step.serviceId}`}
+              href={`${servicesPath}#${step.serviceId}`}
               className="inline-flex items-center gap-1 text-[0.95rem] font-semibold text-primary-bright hover:underline"
             >
-              자세히 <ArrowRight className="size-4" />
+              {moreLabel} <ArrowRight className="size-4" />
             </a>
           )}
         </div>
@@ -124,11 +140,11 @@ function MotionPhoto({
       return;
     }
     // 사라지는 동안은 장면을 유지했다가, 다 사라진 뒤 조용히 처음으로 되감는다
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       v.pause();
       v.currentTime = 0;
     }, 1100);
-    return () => window.clearTimeout(t);
+    return () => window.clearTimeout(timer);
   }, [active]);
 
   const media = "h-full w-full object-cover object-top";

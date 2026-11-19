@@ -1,0 +1,96 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { ArrowRight } from "lucide-react";
+
+import Layout from "../../layouts/Layout.astro";
+import Button from "../../components/ui/Button.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import CtaBand from "../../components/CtaBand.astro";
+import Converge from "../../components/react/home/Converge";
+import DayStory from "../../components/react/home/DayStory";
+import MultiSiteShowcase from "../../components/react/home/MultiSiteShowcase";
+import { videos } from "../../data/content";
+import { defaultLang, translate } from "../../i18n";
+
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: "en" } }];
+}
+
+const lang = Astro.currentLocale ?? defaultLang;
+const text = translate(lang).home;
+const servicesUrl = getRelativeLocaleUrl(lang, "/services");
+const contactUrl = getRelativeLocaleUrl(lang, "/contact");
+---
+<Layout title={text.title}>
+  <!-- 히어로 -->
+  <section class="relative isolate overflow-hidden bg-ink text-ink-foreground">
+    <video
+      class="absolute inset-0 -z-20 h-full w-full object-cover"
+      src={videos.hero}
+      poster={videos.heroPoster}
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+      aria-hidden="true"
+    ></video>
+    <div class="absolute inset-0 -z-10 bg-hero-fade" aria-hidden="true"></div>
+    <div class="absolute inset-0 -z-10 bg-fade-bottom" aria-hidden="true"></div>
+
+    <div class="mx-auto flex min-h-[calc(100svh-4.5rem)] max-w-7xl flex-col justify-center px-5 py-20 lg:px-8">
+      <div class="max-w-3xl animate-rise">
+        <p class="eyebrow-lg text-primary-bright">{text.hero.eyebrow}</p>
+        <h1 class="mt-6 text-[2.75rem] font-extrabold display-tight sm:text-6xl lg:text-[5rem]">
+          {text.hero.title[0]}
+          <br />
+          {text.hero.title[1]}
+        </h1>
+        <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-muted sm:text-xl">{text.hero.description}</p>
+        <div class="mt-10 flex flex-wrap gap-3">
+          <Button href={contactUrl} size="xl">{text.hero.primary} <ArrowRight /></Button>
+          <Button href={servicesUrl} variant="outline-ink" size="xl">{text.hero.secondary}</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 흩어진 시스템 → 하나의 화면 -->
+  <Converge client:visible lang={lang} />
+
+  <!-- 어느 현장의 하루 -->
+  <section class="bg-ink text-ink-foreground">
+    <div class="mx-auto max-w-7xl px-5 pt-28 lg:px-8 lg:pt-36">
+      <SectionHeading tone="ink" eyebrow={text.day.eyebrow}>
+        {text.day.title[0]}
+        <br />
+        {text.day.title[1]}
+        <Fragment slot="description">{text.day.description}</Fragment>
+      </SectionHeading>
+    </div>
+
+    <DayStory client:visible lang={lang} servicesPath={servicesUrl} />
+
+    <div class="mx-auto max-w-7xl px-5 pb-28 lg:px-8">
+      <Button href={servicesUrl} variant="outline-ink" size="xl">{text.day.cta} <ArrowRight /></Button>
+    </div>
+  </section>
+
+  <!-- 현장이 여러 곳일 때 -->
+  <section class="overflow-hidden bg-background">
+    <div class="mx-auto max-w-7xl px-5 py-28 lg:px-8 lg:py-36">
+      <div class="grid items-end gap-10 lg:grid-cols-[1.2fr_1fr]">
+        <SectionHeading eyebrow={text.multiSite.eyebrow}>
+          {text.multiSite.title[0]}
+          <br />
+          {text.multiSite.title[1]}
+        </SectionHeading>
+        <p class="text-lg leading-relaxed text-muted-foreground sm:text-xl">{text.multiSite.description}</p>
+      </div>
+
+      <MultiSiteShowcase client:visible lang={lang} />
+    </div>
+  </section>
+
+  <CtaBand />
+</Layout>

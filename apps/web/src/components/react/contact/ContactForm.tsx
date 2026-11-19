@@ -1,66 +1,53 @@
 import { Send, Sparkles } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
-import { contact, services } from "../../../data/content";
+import { contact, getServices, serviceInquiryValue, type ServiceId } from "../../../data/content";
+import { translate } from "../../../i18n";
 import { buttonClass } from "../../ui/button";
 import { cn } from "../../../lib/cn";
 
-type Topic = { label: string; value: string; serviceId?: string };
+// 선택지의 value는 API(DB enum) 값이다. 화면 글자(label)는 언어마다 다르다.
+type Topic = { label: string; value: string; serviceId?: ServiceId };
 
-const topics: Topic[] = [
-  { label: "통합 플랫폼", value: "PLATFORM" },
-  ...services.map((s) => ({
-    label: s.short,
-    value: {
-      "ai-safety": "AI_SAFETY_BLACKBOX",
-      "ai-chat": "AI_CONVERSATIONAL",
-      "ai-health": "AI_HEALTH",
-      "live-cctv": "CCTV_MONITORING",
-      equipment: "HEAVY_EQUIPMENT",
-    }[s.id] as string,
-    serviceId: s.id,
-  })),
-  { label: "제휴 / 마케팅", value: "PARTNERSHIP" },
-];
 const baseTopic = "PLATFORM";
-
-const siteCounts = [
-  { label: "1곳", value: "ONE" },
-  { label: "2–5곳", value: "TWO_TO_FIVE" },
-  { label: "6곳 이상", value: "SIX_OR_MORE" },
-  { label: "미정", value: "UNDECIDED" },
-];
-
-const cctvChoices = [
-  { id: "existing", label: "기존 CCTV 활용", value: "EXISTING" },
-  { id: "new", label: "새로 구축", value: "NEW" },
-  { id: "unknown", label: "미정", value: "UNDECIDED" },
-];
+const siteValues = ["ONE", "TWO_TO_FIVE", "SIX_OR_MORE", "UNDECIDED"] as const;
+const cctvValues = ["EXISTING", "NEW", "UNDECIDED"] as const;
 
 type Status = { type: "success" | "error"; message: string } | null;
 
 /** 도입 문의 폼: 입력값을 POST /api/inquiries 로 보낸다 */
-export default function ContactForm() {
+export default function ContactForm({ lang }: { lang: string }) {
+  const dict = translate(lang);
+  const text = dict.contact.form;
+
+  const topics: Topic[] = [
+    { label: text.platform, value: baseTopic },
+    ...getServices(lang).map((s) => ({ label: s.short, value: serviceInquiryValue[s.id], serviceId: s.id })),
+    { label: text.partnership, value: "PARTNERSHIP" },
+  ];
+
   const [topic, setTopic] = useState<string[]>([baseTopic]);
-  const [sites, setSites] = useState("ONE");
-  const [cctv, setCctv] = useState("UNDECIDED");
+  const [sites, setSites] = useState<string>("ONE");
+  const [cctv, setCctv] = useState<string>("UNDECIDED");
   const [agree, setAgree] = useState(false);
   const [sending, setSending] = useState(false);
   const [fromConfigurator, setFromConfigurator] = useState(false);
   const [status, setStatus] = useState<Status>(null);
 
-  // 서비스 페이지 구성기에서 넘어온 값(?services=...&sites=...&cctv=...)을 폼에 채운다
+  // 서비스 페이지에서 고른 값을 폼에 채운다
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     const ids = q.get("services")?.split(",").filter(Boolean) ?? [];
-    const site = siteCounts.find((s) => s.label === q.get("sites"));
-    const cam = cctvChoices.find((c) => c.id === q.get("cctv"));
+    const site = siteValues.find((v) => v === q.get("sites"));
+    const cam = cctvValues.find((v) => v === q.get("cctv"));
     if (!ids.length && !site && !cam) return;
 
+    const picked = ids.filter((id): id is ServiceId => id in serviceInquiryValue).map((id) => serviceInquiryValue[id]);
+
     setFromConfigurator(true);
-    setTopic([baseTopic, ...topics.filter((t) => t.serviceId && ids.includes(t.serviceId)).map((t) => t.value)]);
-    if (site) setSites(site.value);
-    if (cam) setCctv(cam.value);
+    setTopic([baseTopic, ...picked]);
+    if (site) setSites(site);
+    if (cam) setCctv(cam);
   }, []);
 
   const toggle = (value: string) =>
@@ -70,11 +57,11 @@ export default function ContactForm() {
     e.preventDefault();
     setStatus(null);
     if (!agree) {
-      setStatus({ type: "error", message: "개인정보 처리방침에 동의해 주세요." });
+      setStatus({ type: "error", message: text.errAgree });
       return;
     }
     if (topic.length === 0) {
-      setStatus({ type: "error", message: "관심 서비스를 하나 이상 골라 주세요." });
+      setStatus({ type: "error", message: text.errTopic });
       return;
     }
 
@@ -88,6 +75,7 @@ export default function ContactForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          locale: lang.toUpperCase(),
           services: topic,
           site_count: sites,
           cctv_env: cctv,
@@ -100,7 +88,7 @@ export default function ContactForm() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      setStatus({ type: "success", message: "문의가 접수되었습니다. 확인 후 신속히 연락드리겠습니다." });
+      setStatus({ type: "success", message: text.success });
       form.reset();
       setAgree(false);
       setTopic([baseTopic]);
@@ -109,7 +97,7 @@ export default function ContactForm() {
       setFromConfigurator(false);
       window.history.replaceState(null, "", window.location.pathname);
     } catch {
-      setStatus({ type: "error", message: `전송에 실패했습니다. ${contact.email}로 직접 문의해 주세요.` });
+      setStatus({ type: "error", message: `${text.failure} ${contact.email}` });
     } finally {
       setSending(false);
     }
@@ -120,16 +108,16 @@ export default function ContactForm() {
       {fromConfigurator && (
         <p className="mb-10 flex items-center gap-3 rounded-lg bg-primary-soft px-5 py-4 text-base text-accent-foreground">
           <Sparkles className="size-5 shrink-0 text-primary" />
-          서비스 페이지에서 만든 구성이 아래에 반영되었습니다.
+          {text.fromConfigurator}
         </p>
       )}
 
       <fieldset>
-        <legend className="text-lg font-bold">관심 서비스 (복수 선택)</legend>
+        <legend className="text-lg font-bold">{text.topicsLegend}</legend>
         <div className="mt-4 flex flex-wrap gap-2">
-          {topics.map((t) => (
-            <Pill key={t.value} selected={topic.includes(t.value)} onClick={() => toggle(t.value)}>
-              {t.label}
+          {topics.map((x) => (
+            <Pill key={x.value} selected={topic.includes(x.value)} onClick={() => toggle(x.value)}>
+              {x.label}
             </Pill>
           ))}
         </div>
@@ -137,21 +125,21 @@ export default function ContactForm() {
 
       <div className="mt-10 grid gap-10 sm:grid-cols-2">
         <fieldset>
-          <legend className="text-lg font-bold">운영 현장 수</legend>
+          <legend className="text-lg font-bold">{text.sitesLegend}</legend>
           <div className="mt-4 flex flex-wrap gap-2">
-            {siteCounts.map((c) => (
-              <Pill key={c.value} selected={sites === c.value} onClick={() => setSites(c.value)}>
-                {c.label}
+            {siteValues.map((v) => (
+              <Pill key={v} selected={sites === v} onClick={() => setSites(v)}>
+                {dict.siteCounts[v]}
               </Pill>
             ))}
           </div>
         </fieldset>
         <fieldset>
-          <legend className="text-lg font-bold">CCTV 환경</legend>
+          <legend className="text-lg font-bold">{text.cctvLegend}</legend>
           <div className="mt-4 flex flex-wrap gap-2">
-            {cctvChoices.map((c) => (
-              <Pill key={c.value} selected={cctv === c.value} onClick={() => setCctv(c.value)}>
-                {c.label}
+            {cctvValues.map((v) => (
+              <Pill key={v} selected={cctv === v} onClick={() => setCctv(v)}>
+                {text.cctv[v]}
               </Pill>
             ))}
           </div>
@@ -159,20 +147,20 @@ export default function ContactForm() {
       </div>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2">
-        <Field id="name" label="이름" required maxLength={50} />
-        <Field id="company" label="회사명" required maxLength={100} />
-        <Field id="email" label="이메일" type="email" required maxLength={254} />
-        <Field id="phone" label="연락처" type="tel" required maxLength={30} />
+        <Field id="name" label={text.name} required maxLength={50} />
+        <Field id="company" label={text.company} required maxLength={100} />
+        <Field id="email" label={text.email} type="email" required maxLength={254} />
+        <Field id="phone" label={text.phone} type="tel" required maxLength={30} />
       </div>
       <div className="mt-6 space-y-2">
         <label htmlFor="message" className="block text-base font-semibold">
-          문의 내용
+          {text.message}
         </label>
         <textarea
           id="message"
           name="message"
           rows={5}
-          placeholder="현장 위치, 도입 희망 시기 등을 적어주시면 더 정확한 제안이 가능합니다."
+          placeholder={text.messagePlaceholder}
           className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         />
       </div>
@@ -186,7 +174,7 @@ export default function ContactForm() {
           className="mt-1.5 size-4 shrink-0 cursor-pointer accent-primary"
         />
         <label htmlFor="agree" className="cursor-pointer text-base leading-relaxed text-muted-foreground">
-          개인정보 처리방침에 동의합니다. (필수)
+          {text.agree}
         </label>
       </div>
 
@@ -203,7 +191,7 @@ export default function ContactForm() {
       )}
 
       <button type="submit" disabled={sending} className={buttonClass("primary", "xl", "mt-10 w-full sm:w-auto")}>
-        {sending ? "보내는 중…" : "문의 보내기"} <Send />
+        {sending ? text.sending : text.submit} <Send />
       </button>
     </form>
   );

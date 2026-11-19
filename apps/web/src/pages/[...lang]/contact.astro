@@ -1,30 +1,33 @@
 ---
 import { Mail, Phone } from "lucide-react";
 
-import Layout from "../layouts/Layout.astro";
-import ContactForm from "../components/react/contact/ContactForm";
-import { contact } from "../data/content";
+import Layout from "../../layouts/Layout.astro";
+import ContactForm from "../../components/react/contact/ContactForm";
+import { contact } from "../../data/content";
+import { defaultLang, translate } from "../../i18n";
+
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: "en" } }];
+}
+
+const lang = Astro.currentLocale ?? defaultLang;
+const text = translate(lang).contact;
 ---
-<Layout
-  title="도입 문의 | Safers 세이퍼스"
-  description="현장 규모와 CCTV 환경을 알려주시면 필요한 세이퍼스 서비스 구성을 제안드립니다."
->
+<Layout title={text.title}>
   <section class="bg-background">
     <div class="mx-auto grid max-w-7xl gap-16 px-5 py-20 lg:grid-cols-[1fr_1.45fr] lg:px-8 lg:py-28">
       <div>
         <div class="lg:sticky lg:top-32">
-          <p class="eyebrow text-primary">도입 문의</p>
+          <p class="eyebrow text-primary">{text.eyebrow}</p>
           <h1 class="mt-5 text-[2.5rem] font-extrabold display-tight sm:text-5xl lg:text-[3.5rem]">
-            우리 현장에 맞는
+            {text.heading[0]}
             <br />
-            구성을 제안드립니다.
+            {text.heading[1]}
           </h1>
-          <p class="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground sm:text-xl">
-            남겨주신 내용을 확인한 뒤 담당자가 신속히 연락드립니다.
-          </p>
+          <p class="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground sm:text-xl">{text.lead}</p>
 
           <div class="mt-12 space-y-5 border-t border-border pt-8">
-            <p class="font-semibold">바로 연락하기</p>
+            <p class="font-semibold">{text.direct}</p>
             <a href={`tel:${contact.phone.replace(/\s/g, "")}`} class="flex items-center gap-4 text-2xl font-bold hover:text-primary">
               <Phone className="size-6 text-primary" />
               {contact.phone}
@@ -37,7 +40,7 @@ import { contact } from "../data/content";
         </div>
       </div>
 
-      <ContactForm client:load />
+      <ContactForm client:load lang={lang} />
     </div>
   </section>
 </Layout>

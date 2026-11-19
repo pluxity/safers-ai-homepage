@@ -1,32 +1,50 @@
 ---
 import { Image } from "astro:assets";
+import { getRelativeLocaleUrl } from "astro:i18n";
 import { Menu, X } from "lucide-react";
 
 import logo from "../assets/logo.svg";
 import ArrowUpRight from "../assets/icons/arrow-up-right.svg";
 import Button from "./ui/Button.astro";
 import { pluxityUrl } from "../data/content";
+import { basePath, defaultLang, languages, translate, type Lang } from "../i18n";
+
+interface Props {
+  noActiveMenu?: boolean;
+}
 
 const { noActiveMenu = false } = Astro.props;
-const path = Astro.url.pathname;
+const lang = Astro.currentLocale ?? defaultLang;
+const text = translate(lang).nav;
+const url = (path: string) => getRelativeLocaleUrl(lang, path);
+
+// 언어를 뗀 기본 경로: /en/services → /services
+const path = basePath(Astro.url.pathname);
 
 const menus = [
-  { href: "/", label: "플랫폼" },
-  { href: "/services", label: "서비스" },
+  { path: "/", label: text.platform },
+  { path: "/services", label: text.services },
 ];
 
 const isActive = (href: string) =>
   !noActiveMenu && (href === "/" ? path === "/" : path.startsWith(href));
+
+// KR / EN: 지금 보고 있는 페이지의 다른 언어 주소
+const langLinks = (Object.keys(languages) as Lang[]).map((l) => ({
+  lang: l,
+  label: languages[l],
+  href: getRelativeLocaleUrl(l, path),
+}));
 ---
 <header id="site-header" class="sticky top-0 z-50 border-b border-ink-border bg-ink/90 text-ink-foreground backdrop-blur-xl">
   <div class="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 lg:px-8">
     <div class="flex items-center gap-10">
-      <a href="/" class="flex items-center"><Image src={logo} alt="safers" class="h-6.5 w-auto" /></a>
+      <a href={url("/")} class="flex items-center"><Image src={logo} alt="safers" class="h-6.5 w-auto" /></a>
       <nav class="hidden items-center gap-1 md:flex">
         {menus.map((menu) => (
           <a
-            href={menu.href}
-            aria-current={isActive(menu.href) ? "page" : undefined}
+            href={url(menu.path)}
+            aria-current={isActive(menu.path) ? "page" : undefined}
             class="rounded-md px-4 py-2 text-base font-medium text-ink-muted transition-colors hover:text-ink-foreground aria-[current=page]:text-ink-foreground"
           >
             {menu.label}
@@ -42,18 +60,31 @@ const isActive = (href: string) =>
         rel="noopener"
         class="inline-flex items-center gap-1 text-[0.95rem] text-ink-muted transition-colors hover:text-ink-foreground"
       >
-        PLUXITY <ArrowUpRight class="size-4" />
+        {text.pluxity} <ArrowUpRight class="size-4" />
       </a>
       <span class="text-[0.95rem] text-ink-muted">
-        <span class="font-semibold text-ink-foreground">KR</span> / EN
+        {langLinks.map((l, i) => (
+          <>
+            {i > 0 && " / "}
+            <a
+              href={l.href}
+              aria-current={l.lang === lang ? "true" : undefined}
+              class="transition-colors hover:text-ink-foreground aria-[current=true]:font-semibold aria-[current=true]:text-ink-foreground"
+            >
+              {l.label}
+            </a>
+          </>
+        ))}
       </span>
-      <Button href="/contact">도입 문의</Button>
+      <Button href={url("/contact")}>{text.contact}</Button>
     </div>
 
     <button
       type="button"
       data-menu-toggle
-      aria-label="메뉴 열기"
+      data-label-open={text.menuOpen}
+      data-label-close={text.menuClose}
+      aria-label={text.menuOpen}
       aria-expanded="false"
       aria-controls="mobile-menu"
       class="group rounded-md p-2 md:hidden"
@@ -65,7 +96,7 @@ const isActive = (href: string) =>
 
   <nav id="mobile-menu" hidden class="border-t border-ink-border px-5 pt-2 pb-6 md:hidden">
     {menus.map((menu) => (
-      <a href={menu.href} class="block border-b border-ink-border py-4 text-xl">
+      <a href={url(menu.path)} class="block border-b border-ink-border py-4 text-xl">
         {menu.label}
       </a>
     ))}
@@ -75,9 +106,16 @@ const isActive = (href: string) =>
       rel="noopener"
       class="flex items-center gap-1 border-b border-ink-border py-4 text-xl text-ink-muted"
     >
-      PLUXITY 홈페이지 <ArrowUpRight class="size-5" />
+      {text.pluxityHome} <ArrowUpRight class="size-5" />
     </a>
-    <Button href="/contact" size="xl" class="mt-6 w-full">도입 문의</Button>
+    <div class="flex gap-4 border-b border-ink-border py-4 text-xl">
+      {langLinks.map((l) => (
+        <a href={l.href} class={l.lang === lang ? "font-semibold" : "text-ink-muted"}>
+          {l.label}
+        </a>
+      ))}
+    </div>
+    <Button href={url("/contact")} size="xl" class="mt-6 w-full">{text.contact}</Button>
   </nav>
 </header>
 
@@ -90,11 +128,10 @@ const isActive = (href: string) =>
     const setOpen = (open: boolean) => {
       menu.hidden = !open;
       toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "메뉴 닫기" : "메뉴 열기");
+      toggle.setAttribute("aria-label", (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? "");
     };
 
-    toggle.addEventListener("click", () => setOpen(menu.hidden));
-    // 메뉴 안의 링크를 누르면 닫는다
+    toggle.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true"));
     menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
   }
 </script>
