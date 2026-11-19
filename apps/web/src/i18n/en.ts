@@ -37,8 +37,8 @@ export const en: Dict = {
   home: {
     title: "Safers | AI CCTV Safety Management for Construction Sites",
     hero: {
-      eyebrow: "AI CCTV-based integrated safety for construction sites",
-      title: ["Detect risks first.", "Capture every incident, before and after, in 3D."],
+      eyebrow: "Integrated construction site safety, powered by AI CCTV",
+      title: ["Detect hazards first.", "Capture every incident, before and after, in 3D."],
       description:
         "Safers finds site hazards in real time with AI video analytics and brings your scattered safety solutions together on one screen.",
       primary: "Contact Sales",
@@ -82,7 +82,7 @@ export const en: Dict = {
       title: ["Choose what you need,", "scale as you grow."],
       description:
         "Every site starts with 3D integrated management. Add the services you need on top, and expand to a multi-site view as your sites grow.",
-      jumpTitle: "Jump to an optional service",
+      jumpTitle: "Jump to a service",
     },
     base: {
       eyebrow: "Core platform · included with every site",
@@ -102,12 +102,12 @@ export const en: Dict = {
           ],
         },
         {
-          k: "Understand",
+          k: "Monitor",
           t: "See who is doing what, and where, in 3D",
           items: ["Worker and equipment locations visualized", "Work status by floor and zone", "Drone and connected device data in one view"],
         },
         {
-          k: "Operate",
+          k: "Manage",
           t: "Headquarters and sites share the same screen",
           items: ["Safety status of every site in one place", "Location-based response when incidents occur", "Follow-up management based on historical data"],
         },
@@ -142,8 +142,8 @@ export const en: Dict = {
       tagExpand: "Scale",
       tagBase: "Core",
       base: "3D Integrated Site Management",
-      sitesPrefix: "Size:",
-      cctvExisting: "Existing CCTV connected",
+      sitesPrefix: "",
+      cctvExisting: "Uses existing CCTV",
       cctvNew: "Includes AI video analytics equipment",
       button: "Request a consultation with this setup",
       footnote:
@@ -154,7 +154,7 @@ export const en: Dict = {
   contact: {
     title: "Contact Sales | Safers",
     eyebrow: "Contact Sales",
-    heading: ["Let us propose", "the right setup for your site."],
+    heading: ["Let's design", "the right setup for your site."],
     lead: "We'll review your inquiry and get back to you shortly.",
     direct: "Reach us directly",
     form: {
@@ -164,7 +164,7 @@ export const en: Dict = {
       partnership: "Partnership / Marketing",
       sitesLegend: "Number of sites",
       cctvLegend: "CCTV environment",
-      cctv: { EXISTING: "Use existing CCTV", NEW: "Install new", UNDECIDED: "Not decided" },
+      cctv: { EXISTING: "Use existing CCTV", NEW: "Install new", UNDECIDED: "Not sure yet" },
       name: "Name",
       company: "Company",
       email: "Email",
@@ -188,28 +188,28 @@ export const en: Dict = {
     home: "Back to home",
   },
 
-  siteCounts: { ONE: "1 site", TWO_TO_FIVE: "2–5 sites", SIX_OR_MORE: "6+ sites", UNDECIDED: "Not decided" },
+  siteCounts: { ONE: "1 site", TWO_TO_FIVE: "2–5 sites", SIX_OR_MORE: "6+ sites", UNDECIDED: "Not sure yet" },
 
   serviceText: {
     "ai-safety": {
-      short: "AI safety detection · black box",
-      name: "AI Safety Detection + AI Black Box",
+      short: "AI safety detection · incident recorder",
+      name: "AI Safety Detection + AI Incident Recorder",
       tagline: "AI detects hazards and records what happens before and after",
       summary:
         "Apply AI video analytics to your existing CCTV to automatically flag and record hazardous situations. Every record, from detection to follow-up action, is kept on a 3D digital twin timeline (SafeLog).",
       points: [
         { title: "Intelligent anomaly detection", body: "Detects falls, intrusion, loitering, missing hard hats and more, and alerts managers instantly" },
         { title: "Smart emergency broadcast", body: "Preset scenarios for fire, collapse and more send evacuation and guidance announcements to the affected zone" },
-        { title: "3D Black Box SafeLog", body: "Records hazards and actions over time as evidence that safety obligations were met" },
+        { title: "SafeLog 3D Incident Log", body: "Records hazards and actions over time as evidence that safety obligations were met" },
       ],
       imageAlt: "AI safety detection screen with hazard alerts on a 3D digital twin",
     },
     "ai-chat": {
       short: "Conversational AI monitoring",
       name: "Conversational AI Monitoring",
-      tagline: "Find features and information quickly in plain language",
+      tagline: "Ask in plain language, get answers fast",
       summary:
-        "Instead of scrubbing through days of footage, ask in one sentence. A three-step pipeline of fast detection (YOLO), context judgment (VLM), and natural-language reporting (AI Agent) filters false alarms and summarizes the situation.",
+        "Instead of scrubbing through days of footage, ask in one sentence. A three-step pipeline of fast detection (YOLO), contextual reasoning (VLM), and natural-language reporting (AI Agent) filters false alarms and summarizes the situation.",
       points: [
         { title: "Natural-language video search", body: "“Find people without hard hats in the last two days” pulls the relevant footage" },
         { title: "False-alarm filtering", body: "The VLM understands context and re-evaluates risk" },
@@ -270,12 +270,12 @@ export const en: Dict = {
       time: "10:24",
       title: "Building B, 12F: missing hard hat detected",
       body: "AI finds the hazard in the footage and alerts the manager right away. An announcement plays automatically in that zone.",
-      serviceName: "AI Safety Detection + AI Black Box",
+      serviceName: "AI Safety Detection + AI Incident Recorder",
       imageAlt: "CCTV screen where AI detected a worker without a hard hat",
     },
     health: {
       time: "13:10",
-      title: "Heat index enters the ‘warning’ level",
+      title: "Heat index hits the ‘warning’ level",
       body: "The moment the threshold is crossed, rest and hydration guidance goes to the worker app. The alert history is kept in the health report.",
       serviceName: "AI Health Management",
       imageAlt: "Heat-index and safety guidance delivered to a worker's phone",
@@ -305,7 +305,7 @@ export const en: Dict = {
       time: "Next day",
       title: "Replay that exact moment in 3D",
       body: "Everything from detection to action stays on a 3D timeline as evidence that safety obligations were met.",
-      serviceName: "3D Black Box SafeLog",
+      serviceName: "SafeLog 3D Incident Log",
       imageAlt: "Hazard events recorded in SafeLog",
     },
   },

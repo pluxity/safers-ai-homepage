@@ -134,7 +134,8 @@ export default function Configurator({ lang, contactPath }: { lang: string; cont
                   </AnimatePresence>
                 </ul>
                 <p className="mt-5 text-[0.95rem] text-ink-muted">
-                  {text.sitesPrefix} {dict.siteCounts[sites]} · {cctv === "EXISTING" ? text.cctvExisting : text.cctvNew}
+                  {text.sitesPrefix && `${text.sitesPrefix} `}
+                  {dict.siteCounts[sites]} ·{cctv === "EXISTING" ? text.cctvExisting : text.cctvNew}
                 </p>
                 <a href={contactHref} className={buttonClass("primary", "xl", "mt-7 w-full")}>
                   {text.button} <ArrowRight />

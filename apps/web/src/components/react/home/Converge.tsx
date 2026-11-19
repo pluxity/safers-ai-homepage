@@ -126,7 +126,7 @@ function ConvergeChip({
   return (
     <motion.div
       style={{ x, y, opacity, scale }}
-      className="absolute left-1/2 top-[38%] -ml-[5.5rem] -mt-7 w-44 sm:-ml-[6.75rem] sm:w-[13.5rem]"
+      className="absolute left-1/2 top-[38%] min-w-44 -translate-x-1/2 -translate-y-1/2 sm:min-w-54"
     >
       <div
         className="rounded-2xl border border-border bg-card p-3 shadow-soft animate-float sm:p-4"
@@ -136,7 +136,7 @@ function ConvergeChip({
           <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary text-foreground">
             <Icon className="size-5" />
           </span>
-          <p className="min-w-0 truncate text-base font-bold sm:text-lg">{label}</p>
+          <p className="whitespace-nowrap text-base font-bold sm:text-lg">{label}</p>
         </div>
       </div>
     </motion.div>
