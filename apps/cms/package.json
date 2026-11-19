@@ -9,9 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource-variable/jetbrains-mono": "catalog:",
     "@tailwindcss/vite": "catalog:",
+    "lucide-react": "catalog:",
+    "pretendard": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-router": "catalog:",
     "tailwindcss": "catalog:"
   },
   "devDependencies": {
