@@ -1,9 +1,48 @@
-import { useState } from 'react'
+import { useState, type SubmitEvent } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
+import { Navigate, useNavigate } from 'react-router'
 import { SafersLogo } from '../components/SafersLogo.tsx'
+import { getToken, setToken } from '../lib/auth.ts'
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const navigate = useNavigate()
+
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setError('')
+    setSubmitting(true)
+
+    const password = new FormData(event.currentTarget).get('password')
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      })
+
+      if (!res.ok) {
+        setError(
+          res.status === 401 ? '비밀번호가 올바르지 않습니다.' : '로그인 중 문제가 발생했습니다.',
+        )
+        return
+      }
+
+      const { token } = await res.json()
+      setToken(token)
+      navigate('/inquiries', { replace: true })
+    } catch {
+      setError('서버에 연결할 수 없습니다.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  // 이미 로그인했으면 로그인 화면 대신 목록으로
+  if (getToken()) return <Navigate to="/inquiries" replace />
 
   return (
     <div className="flex min-h-svh items-center justify-center bg-background px-5 py-10">
@@ -13,7 +52,7 @@ export function LoginPage() {
         </div>
 
         <form
-          onSubmit={(event) => event.preventDefault()}
+          onSubmit={handleSubmit}
           className="rounded-2xl border border-border bg-card p-6 sm:p-8"
         >
           <h1 className="text-center text-xl font-extrabold tracking-tight">로그인</h1>
@@ -49,11 +88,18 @@ export function LoginPage() {
             </button>
           </div>
 
+          {error && (
+            <p role="alert" className="mt-2 text-sm text-destructive">
+              {error}
+            </p>
+          )}
+
           <button
             type="submit"
-            className="mt-6 inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-md bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
+            disabled={submitting}
+            className="mt-6 inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-md bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
           >
-            로그인
+            {submitting ? '로그인 중…' : '로그인'}
           </button>
         </form>
 

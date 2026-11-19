@@ -1,10 +1,20 @@
 import { Inbox, LogOut } from 'lucide-react'
-import { NavLink, Outlet } from 'react-router'
+import { Navigate, NavLink, Outlet, useNavigate } from 'react-router'
 import logo from '../assets/logo.svg'
+import { clearToken, getToken } from '../lib/auth.ts'
 
 const MENUS = [{ to: '/inquiries', label: '도입 문의', icon: Inbox }]
 
 export function AdminLayout() {
+  const navigate = useNavigate()
+
+  if (!getToken()) return <Navigate to="/login" replace />
+
+  const logout = () => {
+    clearToken()
+    navigate('/login', { replace: true })
+  }
+
   return (
     <div className="flex min-h-svh">
       <aside className="sticky top-0 flex h-svh w-60 shrink-0 flex-col bg-ink text-ink-foreground">
@@ -37,6 +47,7 @@ export function AdminLayout() {
         <div className="mt-auto border-t border-ink-border p-3">
           <button
             type="button"
+            onClick={logout}
             className="flex w-full cursor-pointer items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-ink-raised/60 hover:text-ink-foreground"
           >
             <LogOut className="size-4 shrink-0" aria-hidden="true" />
