@@ -15,6 +15,7 @@ apps/api/src/generated
 .claude
 **/.DS_Store
 **/Thumbs.db
+**/logs
 **/*.log
 
 # 도커 설정 파일 자체

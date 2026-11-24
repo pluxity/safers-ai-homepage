@@ -16,6 +16,8 @@
     "express": "catalog:",
     "jsonwebtoken": "catalog:",
     "pg": "catalog:",
+    "winston": "catalog:",
+    "winston-daily-rotate-file": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
