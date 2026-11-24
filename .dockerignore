@@ -1,0 +1,23 @@
+# 의존성, 빌드 결과물 (이미지 안에서 새로 설치하고 만든다)
+**/node_modules
+**/dist
+**/.astro
+apps/api/src/generated
+
+# 비밀값 (이미지에 절대 넣지 않는다. 값은 compose가 실행할 때 넣어 준다)
+.env
+.env.*
+
+# git, 에디터, OS, 로그
+.git
+.vscode
+.idea
+.claude
+**/.DS_Store
+**/Thumbs.db
+**/*.log
+
+# 도커 설정 파일 자체
+**/Dockerfile*
+docker-compose*.yml
+.dockerignore
